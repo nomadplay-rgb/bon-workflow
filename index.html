@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>본동물의료센터 카드뉴스 제작 파이프라인 — 회의용 대시보드</title>
+<style>
+  :root{
+    --brand-primary:#617d3b;
+    --brand-secondary:#8B6B4A;
+    --brand-accent:#f6d85d;
+    --bg-dark:#1d2432;
+    --bg-subtle:#f8fbe8;
+    --bg-warm:#f6edd9;
+    --bg-light:#f5f5f5;
+    --caption-pill:#d5cbbf;
+    --text-white:#ffffff;
+    --text-dark:#1d2432;
+    --text-body:#504538;
+    --text-sub:#7a8c6e;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Noto Sans KR','Malgun Gothic',sans-serif;
+    background:var(--bg-light);
+    color:var(--text-body);
+    line-height:1.6;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:56px 32px 90px;}
+
+  /* Header */
+  .hero{
+    background:linear-gradient(135deg,var(--bg-dark) 0%, #2b3448 100%);
+    border-radius:20px;
+    padding:44px 48px;
+    color:var(--text-white);
+    position:relative;
+    overflow:hidden;
+    margin-bottom:32px;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; right:-60px; top:-60px;
+    width:260px;height:260px;border-radius:50%;
+    background:radial-gradient(circle, rgba(246,216,93,0.18), transparent 70%);
+  }
+  .hero .eyebrow{
+    display:inline-block;font-size:12.5px;letter-spacing:0.14em;
+    color:var(--brand-accent);font-weight:700;margin-bottom:12px;
+    text-transform:uppercase;
+  }
+  .hero h1{font-size:30px;margin:0 0 8px;font-weight:800;letter-spacing:-0.01em;}
+  .hero p{font-size:14px;color:#c9cfda;margin:0;max-width:640px;}
+  .hero .rev{margin-top:14px;font-size:11px;color:#9aa3b5;}
+
+  /* Workflow summary strip */
+  .flow-strip{
+    display:flex;background:#fff;border-radius:16px;overflow:hidden;
+    box-shadow:0 2px 12px rgba(29,36,50,0.05);margin-bottom:56px;border:1px solid #ece6d9;
+  }
+  .flow-strip .fs{
+    flex:1;padding:18px 14px;text-align:center;border-right:1px solid #ece6d9;position:relative;
+  }
+  .flow-strip .fs:last-child{border-right:none;}
+  .flow-strip .fs .fn{
+    width:26px;height:26px;border-radius:50%;background:var(--bg-dark);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;
+    margin:0 auto 8px;
+  }
+  .flow-strip .fs.q .fn{background:var(--brand-primary);}
+  .flow-strip .fs h4{font-size:12.5px;margin:0 0 4px;color:var(--text-dark);font-weight:800;}
+  .flow-strip .fs p{font-size:10.5px;color:var(--text-sub);margin:0;}
+
+  /* Section headers */
+  .sec-head{margin:64px 0 22px;}
+  .sec-head .eyebrow-s{font-size:11.5px;font-weight:800;letter-spacing:0.1em;color:var(--brand-primary);text-transform:uppercase;}
+  .sec-head h2{font-size:22px;margin:6px 0 0;color:var(--text-dark);font-weight:800;}
+  .sec-head p.desc{font-size:13px;color:var(--text-sub);margin:6px 0 0;}
+
+  /* Timeline */
+  .timeline{position:relative;padding-left:52px;}
+  .timeline::before{
+    content:"";position:absolute;left:19px;top:8px;bottom:8px;width:2px;background:#e3dccc;
+  }
+  .tstep{position:relative;margin-bottom:28px;}
+  .tstep .marker{
+    position:absolute;left:-52px;top:0;width:40px;height:40px;border-radius:12px;
+    background:var(--bg-dark);color:#fff;display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:14px;box-shadow:0 3px 10px rgba(29,36,50,0.18);
+  }
+  .tstep.q .marker{background:var(--brand-primary);}
+  .tcard{
+    background:#fff;border-radius:14px;padding:20px 24px;border:1px solid #ece6d9;
+    box-shadow:0 2px 10px rgba(29,36,50,0.04);
+  }
+  .tcard .ttitle{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+  .tcard .ttitle .tstepno{font-size:11px;font-weight:800;color:var(--brand-secondary);letter-spacing:0.06em;}
+  .tcard .ttitle h3{font-size:17px;margin:0;color:var(--text-dark);font-weight:800;}
+  .tcard .tdesc{font-size:13px;color:var(--text-body);margin:0 0 10px;}
+  .tcard ul{margin:0;padding-left:0;list-style:none;}
+  .tcard ul li{
+    font-size:12.5px;color:var(--text-body);padding:6px 0 6px 18px;position:relative;
+  }
+  .tcard ul li::before{content:"–";position:absolute;left:0;color:var(--text-sub);}
+  .subgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;}
+  .subcard{background:var(--bg-subtle);border-radius:10px;padding:12px 14px;}
+  .subcard.dark{background:var(--bg-dark);color:#fff;}
+  .subcard.dark ul li{color:#dfe3ea;}
+  .subcard.dark ul li::before{color:#9aa3b5;}
+  .subcard h5{font-size:12px;margin:0 0 6px;font-weight:800;color:var(--text-dark);}
+  .subcard.dark h5{color:#fff;}
+  .subcard ul{margin:0;padding-left:0;list-style:none;}
+  .subcard ul li{font-size:11.5px;padding:3px 0 3px 14px;position:relative;color:var(--text-body);}
+  .subcard ul li::before{content:"·";position:absolute;left:0;color:var(--text-sub);}
+  .type-note{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+  .type-note span{
+    font-size:11px;font-weight:700;padding:5px 10px;border-radius:7px;
+  }
+  .type-note .a{background:var(--bg-subtle);color:var(--brand-primary);}
+  .type-note .b{background:var(--bg-dark);color:#fff;}
+  .has-q{
+    margin-top:12px;background:var(--bg-warm);border-radius:9px;padding:10px 14px;font-size:11.5px;color:var(--text-body);
+  }
+  .has-q b{color:var(--text-dark);}
+
+  /* Question digest table */
+  .qtable{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;
+    box-shadow:0 2px 10px rgba(29,36,50,0.04);}
+  .qtable th,.qtable td{padding:12px 16px;font-size:12.5px;text-align:left;border-bottom:1px solid #ece6d9;vertical-align:top;}
+  .qtable th{background:var(--bg-dark);color:#fff;font-weight:700;font-size:11.5px;letter-spacing:0.03em;}
+  .qtable tr:last-child td{border-bottom:none;}
+  .qtable td.step{font-weight:800;color:var(--brand-secondary);white-space:nowrap;}
+  .qtable td.none{color:var(--text-sub);font-style:italic;}
+  .qtable td.type-a{border-left:3px solid var(--brand-primary);}
+  .qtable td.type-b{border-left:3px solid var(--bg-dark);}
+
+  /* Color tokens */
+  .swatch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .swatch{border-radius:12px;overflow:hidden;border:1px solid #ece6d9;background:#fff;}
+  .swatch .chip{height:56px;}
+  .swatch .info{padding:9px 11px;}
+  .swatch .info .name{font-size:12px;font-weight:800;color:var(--text-dark);}
+  .swatch .info .hex{font-size:11px;color:var(--text-sub);font-family:monospace;}
+  .swatch .info .use{font-size:10.5px;color:var(--text-body);margin-top:3px;}
+
+  .pattern-table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden;
+    box-shadow:0 2px 10px rgba(29,36,50,0.04);}
+  .pattern-table th,.pattern-table td{padding:12px 16px;font-size:12.5px;text-align:left;border-bottom:1px solid #ece6d9;}
+  .pattern-table th{background:var(--bg-dark);color:#fff;font-weight:700;font-size:11.5px;letter-spacing:0.03em;}
+  .pattern-table tr:last-child td{border-bottom:none;}
+  .pattern-table td.k{font-weight:700;color:var(--text-dark);}
+
+  .footer-note{margin-top:60px;text-align:center;font-size:11px;color:var(--text-sub);}
+
+  @media(max-width:820px){
+    .flow-strip{flex-wrap:wrap;}
+    .flow-strip .fs{flex:1 1 33%;border-bottom:1px solid #ece6d9;}
+    .swatch-grid{grid-template-columns:1fr 1fr;}
+    .subgrid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <span class="eyebrow">BON Animal Medical Center · Card News Pipeline</span>
+    <h1>카드뉴스 제작 파이프라인 회의 대시보드</h1>
+    <p>확인 질문부터 Figma 생성까지, 전체 흐름을 STEP 1~5로 정리했습니다. 처음 보는 사람도 순서대로 읽으면 전체 프로세스를 이해할 수 있도록 구성했습니다.</p>
+    <div class="rev">bon-card-news-figma 스킬 15차 개정(2026-07-04) 기준 — 위계 표기: STEP N &gt; N-A &gt; N-A_01</div>
+  </div>
+
+  <!-- WORKFLOW SUMMARY STRIP -->
+  <div class="flow-strip">
+    <div class="fs q"><div class="fn">1</div><h4>확인 질문</h4><p>유형·주제·이미지</p></div>
+    <div class="fs"><div class="fn">2</div><h4>리서치·기획</h4><p>4개 병렬 리서치 → 구성 확정</p></div>
+    <div class="fs"><div class="fn">3</div><h4>카피</h4><p>소비자 언어 리서치 → 톤별 작성</p></div>
+    <div class="fs"><div class="fn">4</div><h4>HTML 시안</h4><p>확인용 초안 생성</p></div>
+    <div class="fs"><div class="fn">5</div><h4>Figma 생성</h4><p>실 슬라이드 + 수정 대응</p></div>
+  </div>
+
+  <!-- DETAIL TIMELINE -->
+  <div class="sec-head">
+    <div class="eyebrow-s">Step-by-step</div>
+    <h2>STEP 1 ~ 5 세부 내용</h2>
+    <p class="desc">각 스텝에서 실제로 무엇을 하는지, 유형(병원소식/홍보게시물)에 따라 달라지는 부분과 사용자에게 질문이 발생하는 지점을 함께 표시했습니다.</p>
+  </div>
+
+  <div class="timeline">
+
+    <div class="tstep q">
+      <div class="marker">1</div>
+      <div class="tcard">
+        <div class="ttitle"><span class="tstepno">STEP 1</span><h3>확인 질문</h3></div>
+        <p class="tdesc">추가 인터뷰 없이 딱 3가지만 한 번에 묻고 바로 STEP 2로 진행한다.</p>
+        <ul>
+          <li>유형 — 병원소식 / 홍보게시물 (주제로 추정 가능하면 먼저 제안, 센터신설·장비도입·진료과 홍보는 모두 "홍보게시물")</li>
+          <li>주제/소재 — 어떤 내용인지 한 줄</li>
+          <li>이미지 — 첨부 가능 여부 (없으면 Unsplash 대체)</li>
+        </ul>
+        <div class="type-note">
+          <span class="a">병원소식 → 톤 A(팩트 정보 위주) 자동 적용</span>
+          <span class="b">홍보게시물 → 톤 B(소비자 공감형 광고 카피) 자동 적용</span>
+        </div>
+        <div class="has-q"><b>✔ 사용자 질문 있음</b> — 이 스텝의 3가지 질문이 파이프라인 전체에서 유일하게 사용자에게 직접 묻는 지점이다. 톤을 직접 언급하면("전문적으로"/"더 공감가게") 그 즉시 반대 톤으로 전환.</div>
+      </div>
+    </div>
+
+    <div class="tstep">
+      <div class="marker">2</div>
+      <div class="tcard">
+        <div class="ttitle"><span class="tstepno">STEP 2</span><h3>리서치 · 기획</h3></div>
+        <p class="tdesc">2-A(리서치 4종 병렬) → 2-B(기획, 페이지 수·구성 확정) 순서로 진행. 사용자에게 묻지 않고 자동 실행.</p>
+        <div class="subgrid">
+          <div class="subcard">
+            <h5>2-A 리서치 (병렬 4종)</h5>
+            <ul>
+              <li>2-A_01 경쟁 동물병원 (항상) — 해마루·VIP·로얄동물메디컬그룹</li>
+              <li>2-A_02 주요 대학 수의학과 (항상) — SNU·KU·CBNU</li>
+              <li>2-A_03 의료 용어·논문 자문 (필요 시) — 학술 용어 포함 주제일 때만</li>
+              <li>2-A_04 인스타그램 인기 키워드 (항상) — 해시태그 조회수·인기도 순 정리</li>
+            </ul>
+          </div>
+          <div class="subcard dark">
+            <h5>2-B 기획</h5>
+            <ul>
+              <li>병원소식 — 4~5페이지 고정 (표지 → 본문 2~3장 → 마무리)</li>
+              <li>홍보게시물 — 4~8페이지 유동 (표지·마무리 고정, 본문만 조절)</li>
+              <li>카피 없이 페이지별 개요 한 줄씩만 확정</li>
+              <li>BON 차별화 방향·인기 키워드 배치 위치까지 결정</li>
+            </ul>
+          </div>
+        </div>
+        <div class="has-q"><b>질문 없음</b> — 4개 리서치 결과 종합 후 자동으로 구성안 확정, 바로 STEP 3으로 이동.</div>
+      </div>
+    </div>
+
+    <div class="tstep">
+      <div class="marker">3</div>
+      <div class="tcard">
+        <div class="ttitle"><span class="tstepno">STEP 3</span><h3>카피</h3></div>
+        <p class="tdesc">3-A(소비자 실제 언어 리서치, 항상 실행) → 3-B(카피 작성) 순서로 진행. 글자수 초과 시 즉시 축약.</p>
+        <div class="subgrid">
+          <div class="subcard">
+            <h5>3-A 소비자 실제 언어 리서치</h5>
+            <ul>
+              <li>네이버 카페 — "우리 애가 자꾸 ~해요" 식 증상 묘사</li>
+              <li>인스타 해시태그 — 반응 좋았던 경쟁사·인플루언서 패턴</li>
+              <li>네이버 지식인·블로그 — 질문형 헤드라인 소재</li>
+            </ul>
+          </div>
+          <div class="subcard dark">
+            <h5>3-B 카피 작성 (톤 A/B)</h5>
+            <ul>
+              <li>A(팩트 정보 위주) — 결론→근거, 수치·용어 정확 표기, 감정 수사 최소화</li>
+              <li>B(소비자 공감형) — 3-A 소재를 헤드라인 재료로 사용, 증상→원인, 질문형·대비형 헤드라인</li>
+            </ul>
+          </div>
+        </div>
+        <div class="has-q"><b>질문 없음</b> — 단, 진행 중 톤 변경 요청이 들어오면 그 시점에 즉시 반영.</div>
+      </div>
+    </div>
+
+    <div class="tstep">
+      <div class="marker">4</div>
+      <div class="tcard">
+        <div class="ttitle"><span class="tstepno">STEP 4</span><h3>HTML 시안 생성</h3></div>
+        <p class="tdesc">기획안 확정 즉시 전체 슬라이드를 스크롤 가능한 단일 HTML로 만들어 사용자 확인을 받는다.</p>
+        <ul>
+          <li>각 슬라이드 1080×1350px, scale:0.5 미리보기</li>
+          <li>이미지 없을 시 Unsplash 자동 삽입, 실패 시 플레이스홀더 컬러 사용</li>
+          <li>"시안입니다. 확인 후 수정사항 알려주세요. 완료되면 Figma 파일을 생성합니다." 안내 후 대기</li>
+        </ul>
+        <div class="has-q"><b>확인 필요 지점</b> — 질문은 아니지만, 사용자 승인을 받아야 STEP 5(Figma 생성)로 진행 가능.</div>
+      </div>
+    </div>
+
+    <div class="tstep">
+      <div class="marker">5</div>
+      <div class="tcard">
+        <div class="ttitle"><span class="tstepno">STEP 5</span><h3>Figma MCP 파일 생성</h3></div>
+        <p class="tdesc">승인 즉시 실제 슬라이드를 Figma에 생성하고, 이후 수정 요청은 해당 노드만 재수정한다 (5-A~5-D).</p>
+        <ul>
+          <li>5-A 사전 준비 — 신규 파일 생성, Noto Sans KR 폰트 로드</li>
+          <li>5-B 프레임 좌표 — 1140px 간격 순차 배치, 2회 분할 호출로 토큰 절약</li>
+          <li>5-C 완료 시 자동 브랜드 검증 — 색상·글자수·세이프존·금지 컬러 점검</li>
+          <li>5-D 수정 요청 처리 — 전체 재생성 없이 해당 프레임/노드만 수정, B-2 토큰 값만 사용</li>
+        </ul>
+        <div class="has-q"><b>질문 없음</b> — 생성 실패 시에만 상황 안내 후 재시도(섹션 F 대응).</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- QUESTION DIGEST -->
+  <div class="sec-head">
+    <div class="eyebrow-s">Quick reference</div>
+    <h2>유형별 질문 모음</h2>
+    <p class="desc">STEP 1~5 전체를 훑어, 사용자에게 실제로 묻거나 확인받는 지점만 유형별로 뽑았습니다.</p>
+  </div>
+  <table class="qtable">
+    <tr><th>스텝</th><th>병원소식</th><th>홍보게시물</th></tr>
+    <tr>
+      <td class="step">STEP 1</td>
+      <td class="type-a">① 병원소식 맞는지 ② 소식 내용 한 줄 ③ 이미지 첨부 여부</td>
+      <td class="type-b">① 홍보게시물 맞는지 (센터·장비·진료과 홍보 포함) ② 홍보 대상 한 줄 ③ 이미지 첨부 여부</td>
+    </tr>
+    <tr><td class="step">STEP 2</td><td class="none" colspan="2">질문 없음 — 2-A 병렬 리서치 → 2-B 자동 구성 확정</td></tr>
+    <tr>
+      <td class="step">STEP 3</td>
+      <td class="type-a">(선택) "더 전문적으로" 요청 시 톤 A 유지/강화</td>
+      <td class="type-b">(선택) "더 공감가게" 요청 시 톤 B 유지/강화</td>
+    </tr>
+    <tr><td class="step">STEP 4</td><td colspan="2">시안 확인 후 수정사항 유무 (승인 또는 수정 요청)</td></tr>
+    <tr><td class="step">STEP 5</td><td colspan="2">생성 완료 후 추가 수정 요청 유무</td></tr>
+  </table>
+
+  <!-- COLOR TOKENS -->
+  <div class="sec-head">
+    <div class="eyebrow-s">Reference · B-2</div>
+    <h2>브랜드 컬러 토큰</h2>
+    <p class="desc">bon-brand-guide v2.0 기준, 모든 스텝의 결과물이 공통으로 따르는 색상 규칙.</p>
+  </div>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="chip" style="background:#617d3b;"></div><div class="info"><div class="name">brand-primary</div><div class="hex">#617d3b</div><div class="use">병원소식 헤더 · BON NEWS 라벨</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#8B6B4A;"></div><div class="info"><div class="name">brand-secondary</div><div class="hex">#8B6B4A</div><div class="use">보조 강조 포인트</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#f6d85d;"></div><div class="info"><div class="name">brand-accent</div><div class="hex">#f6d85d</div><div class="use">홍보게시물 강조 텍스트</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#1d2432;"></div><div class="info"><div class="name">bg-dark</div><div class="hex">#1d2432</div><div class="use">표지·내지·마무리 공통 오버레이</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#f8fbe8;border-bottom:1px solid #eee;"></div><div class="info"><div class="name">bg-subtle</div><div class="hex">#f8fbe8</div><div class="use">밝은 배경 변형</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#f6edd9;"></div><div class="info"><div class="name">bg-warm</div><div class="hex">#f6edd9</div><div class="use">밝은 배경 변형</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#f5f5f5;border-bottom:1px solid #eee;"></div><div class="info"><div class="name">bg-light</div><div class="hex">#f5f5f5</div><div class="use">홍보게시물 라이트존 (실측값)</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#d5cbbf;"></div><div class="info"><div class="name">bg-caption-pill</div><div class="hex">#d5cbbf</div><div class="use">캡션 pill 배경</div></div></div>
+  </div>
+
+  <!-- LAYOUT / PAGE RULES -->
+  <div class="sec-head">
+    <div class="eyebrow-s">Reference · B-3 / 5-B</div>
+    <h2>유형별 배경 조합 · 프레임 규칙</h2>
+  </div>
+  <table class="pattern-table">
+    <tr><th>유형</th><th>표지</th><th>내용 페이지</th><th>마무리</th></tr>
+    <tr>
+      <td class="k">병원소식</td>
+      <td>PATTERN-COVER (풀이미지 블리드 + 네이비 그라디언트)</td>
+      <td>PATTERN-B — 이미지 풀블리드 + BON NEWS 라벨</td>
+      <td>PATTERN-C 간단형 — 연락처 생략</td>
+    </tr>
+    <tr>
+      <td class="k">홍보게시물</td>
+      <td>PATTERN-COVER + 특징 태그 pill 행</td>
+      <td>PATTERN-A — 라이트존(#f5f5f5)+네이비존, 경계 712px, 이미지박스 16:9가 경계를 가로지름</td>
+      <td>PATTERN-C 풀버전 — 연락처 포함</td>
+    </tr>
+  </table>
+
+  <div class="footer-note">본동물의료센터 카드뉴스 제작 스킬(bon-card-news-figma) 15차 개정 기준 · 2026-07-04 회의용 요약 대시보드</div>
+
+</div>
+</body>
+</html>
